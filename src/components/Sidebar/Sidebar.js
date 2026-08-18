@@ -1,4 +1,3 @@
-/*eslint-disable*/
 import { HamburgerIcon } from "@chakra-ui/icons";
 // chakra imports
 import {
@@ -14,18 +13,20 @@ import {
   Stack,
   Text,
   useDisclosure,
+  Icon,
 } from "@chakra-ui/react";
 import IconBox from "components/Icons/IconBox";
-import { SimmmpleLogoWhite } from "components/Icons/Icons";
+import { FiLayers } from "react-icons/fi";
 import { Separator } from "components/Separator/Separator";
-import { SidebarHelp } from "components/Sidebar/SidebarHelp";
 import PropTypes from "prop-types";
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
+import { useTickets } from "context/TicketContext";
 
 // FUNCTIONS
 
 function Sidebar(props) {
+  const { themeColors, isDark } = useTickets();
   // to check for active links and opened collapses
   let location = useLocation();
   // this is for the rest of the collapses
@@ -40,24 +41,26 @@ function Sidebar(props) {
   const createLinks = (routes) => {
     const { sidebarVariant } = props;
     // Chakra Color Mode
-    let activeBg = "#1A1F37";
-    let inactiveBg = "#1A1F37";
-    let activeColor = "white";
-    let inactiveColor = "white";
-    let sidebarActiveShadow = "none";
+    let activeBg = themeColors.subCardBg;
+    let inactiveBg = "transparent";
+    let activeColor = themeColors.textPrimary;
+    let inactiveColor = themeColors.textSecondary;
 
     return routes.map((prop, key) => {
-      if (prop.redirect) {
+      if (prop.redirect || prop.hideInSidebar) {
         return null;
       }
       if (prop.category) {
         var st = {};
         st[prop["state"]] = !state[prop.state];
         return (
-          <>
+          <React.Fragment key={key}>
             <Text
-              color={activeColor}
+              color={themeColors.textMuted}
               fontWeight='bold'
+              fontSize='xs'
+              textTransform='uppercase'
+              letterSpacing='1px'
               mb={{
                 xl: "12px",
               }}
@@ -72,33 +75,34 @@ function Sidebar(props) {
                 : prop.name}
             </Text>
             {createLinks(prop.views)}
-          </>
+          </React.Fragment>
         );
       }
       return (
-        <NavLink to={prop.layout + prop.path}>
+        <NavLink to={prop.layout + prop.path} key={key}>
           {activeRoute(prop.layout + prop.path) === "active" ? (
             <Button
               boxSize='initial'
               justifyContent='flex-start'
               alignItems='center'
-              boxShadow={sidebarActiveShadow}
+              boxShadow='none'
               bg={activeBg}
+              border={`1px solid ${themeColors.borderLight}`}
+              backdropFilter={themeColors.glassBackdrop}
               transition={variantChange}
-              backdropFilter='blur(42px)'
               mb={{
-                xl: "12px",
+                xl: "10px",
               }}
               mx={{
                 xl: "auto",
               }}
               ps={{
                 sm: "10px",
-                xl: "16px",
+                xl: "14px",
               }}
-              py='12px'
-              borderRadius='15px'
-              _hover='none'
+              py='10px'
+              borderRadius='12px'
+              _hover={{ bg: themeColors.subCardHover }}
               w='100%'
               _active={{
                 bg: "inherit",
@@ -106,23 +110,24 @@ function Sidebar(props) {
                 borderColor: "transparent",
               }}
               _focus={{
-                boxShadow: "0px 7px 11px rgba(0, 0, 0, 0.04)",
+                boxShadow: "none",
               }}>
-              <Flex>
+              <Flex align='center'>
                 {typeof prop.icon === "string" ? (
                   <Icon>{prop.icon}</Icon>
                 ) : (
                   <IconBox
-                    bg='brand.200'
-                    color='white'
-                    h='30px'
-                    w='30px'
+                    bg={themeColors.buttonPrimaryBg}
+                    color={themeColors.buttonPrimaryColor}
+                    h='28px'
+                    w='28px'
+                    borderRadius='8px'
                     me='12px'
                     transition={variantChange}>
                     {prop.icon}
                   </IconBox>
                 )}
-                <Text color={activeColor} my='auto' fontSize='sm'>
+                <Text color={activeColor} my='auto' fontSize='sm' fontWeight='bold'>
                   {document.documentElement.dir === "rtl"
                     ? prop.rtlName
                     : prop.name}
@@ -136,18 +141,18 @@ function Sidebar(props) {
               alignItems='center'
               bg='transparent'
               mb={{
-                xl: "12px",
+                xl: "8px",
               }}
               mx={{
                 xl: "auto",
               }}
-              py='12px'
+              py='10px'
               ps={{
                 sm: "10px",
-                xl: "16px",
+                xl: "14px",
               }}
-              borderRadius='15px'
-              _hover='none'
+              borderRadius='12px'
+              _hover={{ bg: themeColors.subCardBg, color: themeColors.textPrimary }}
               w='100%'
               _active={{
                 bg: "inherit",
@@ -157,21 +162,23 @@ function Sidebar(props) {
               _focus={{
                 boxShadow: "none",
               }}>
-              <Flex>
+              <Flex align='center'>
                 {typeof prop.icon === "string" ? (
                   <Icon>{prop.icon}</Icon>
                 ) : (
                   <IconBox
-                    bg={inactiveBg}
-                    color='brand.200'
-                    h='30px'
-                    w='30px'
+                    bg={themeColors.subCardBg}
+                    color={themeColors.textSecondary}
+                    border={`1px solid ${themeColors.borderLight}`}
+                    h='28px'
+                    w='28px'
+                    borderRadius='8px'
                     me='12px'
                     transition={variantChange}>
                     {prop.icon}
                   </IconBox>
                 )}
-                <Text color={inactiveColor} my='auto' fontSize='sm'>
+                <Text color={inactiveColor} my='auto' fontSize='sm' fontWeight='medium'>
                   {document.documentElement.dir === "rtl"
                     ? prop.rtlName
                     : prop.name}
@@ -187,33 +194,31 @@ function Sidebar(props) {
 
   var links = <>{createLinks(routes)}</>;
   //  BRAND
-  //  Chakra Color Mode
-  let sidebarBg =
-    "linear-gradient(111.84deg, rgba(6, 11, 38, 0.94) 59.3%, rgba(26, 31, 55, 0) 100%)";
   let sidebarRadius = "16px";
   let sidebarMargins = "16px 0px 16px 16px";
   var brand = (
     <Box pt={"25px"} mb='12px'>
-      <Link
-        href={`${process.env.PUBLIC_URL}/#/`}
-        target='_blank'
-        display='flex'
-        lineHeight='100%'
-        mb='30px'
-        fontWeight='bold'
-        justifyContent='center'
-        alignItems='center'
-        fontSize='11px'>
-        <SimmmpleLogoWhite w='22px' h='22px' me='10px' mt='2px' />
-        <Box
-          bg='linear-gradient(97.89deg, #FFFFFF 70.67%, rgba(117, 122, 140, 0) 108.55%)'
-          bgClip='text'>
-          <Text fontSize='sm' letterSpacing='3px' mt='3px' color='transparent'>
-            {logoText}
+      <NavLink
+        to='/admin/dashboard'
+        style={{
+          display: "flex",
+          lineHeight: "100%",
+          marginBottom: "24px",
+          fontWeight: "bold",
+          justifyContent: "center",
+          alignItems: "center",
+          fontSize: "11px",
+        }}>
+        <Flex w='28px' h='28px' borderRadius='8px' bg={themeColors.buttonPrimaryBg} justify='center' align='center' color={themeColors.buttonPrimaryColor} me='10px'>
+          <Icon as={FiLayers} w='15px' h='15px' />
+        </Flex>
+        <Box>
+          <Text fontSize='sm' letterSpacing='2px' mt='3px' color={themeColors.textPrimary} fontWeight='extrabold'>
+            {logoText || "S-TICKET-UP"}
           </Text>
         </Box>
-      </Link>
-      <Separator></Separator>
+      </NavLink>
+      <Separator bg={themeColors.borderLight} />
     </Box>
   );
 
@@ -222,8 +227,10 @@ function Sidebar(props) {
     <Box ref={mainPanel}>
       <Box display={{ sm: "none", xl: "block" }} position='fixed'>
         <Box
-          bg={sidebarBg}
-          backdropFilter='blur(10px)'
+          bg={themeColors.cardBg}
+          border={`1px solid ${themeColors.cardBorder}`}
+          backdropFilter={themeColors.glassBackdrop}
+          boxShadow={themeColors.cardShadow}
           transition={variantChange}
           w='260px'
           maxW='260px'
@@ -242,7 +249,6 @@ function Sidebar(props) {
           <Stack direction='column' mb='40px'>
             <Box>{links}</Box>
           </Stack>
-          <SidebarHelp></SidebarHelp>
         </Box>
       </Box>
     </Box>
@@ -252,6 +258,7 @@ function Sidebar(props) {
 // FUNCTIONS
 
 export function SidebarResponsive(props) {
+  const { themeColors, isDark } = useTickets();
   // to check for active links and opened collapses
   let location = useLocation();
   // this is for the rest of the collapses
@@ -263,24 +270,28 @@ export function SidebarResponsive(props) {
   };
   // this function creates the links and collapses that appear in the sidebar (left menu)
   const createLinks = (routes) => {
+    const { sidebarVariant } = props;
     // Chakra Color Mode
-    const activeBg = "#1A1F37";
-    const inactiveBg = "#1A1F37";
-    const activeColor = "white";
-    const inactiveColor = "white";
+    let activeBg = themeColors.subCardBg;
+    let inactiveBg = "transparent";
+    let activeColor = themeColors.textPrimary;
+    let inactiveColor = themeColors.textSecondary;
 
     return routes.map((prop, key) => {
-      if (prop.redirect) {
+      if (prop.redirect || prop.hideInSidebar) {
         return null;
       }
       if (prop.category) {
         var st = {};
         st[prop["state"]] = !state[prop.state];
         return (
-          <>
+          <React.Fragment key={key}>
             <Text
-              color={activeColor}
+              color={themeColors.textMuted}
               fontWeight='bold'
+              fontSize='xs'
+              textTransform='uppercase'
+              letterSpacing='1px'
               mb={{
                 xl: "12px",
               }}
@@ -295,30 +306,31 @@ export function SidebarResponsive(props) {
                 : prop.name}
             </Text>
             {createLinks(prop.views)}
-          </>
+          </React.Fragment>
         );
       }
       return (
-        <NavLink to={prop.layout + prop.path}>
+        <NavLink to={prop.layout + prop.path} key={key}>
           {activeRoute(prop.layout + prop.path) === "active" ? (
             <Button
               boxSize='initial'
               justifyContent='flex-start'
               alignItems='center'
               bg={activeBg}
+              border={`1px solid ${themeColors.borderLight}`}
               mb={{
-                xl: "12px",
+                xl: "10px",
               }}
               mx={{
                 xl: "auto",
               }}
               ps={{
                 sm: "10px",
-                xl: "16px",
+                xl: "14px",
               }}
-              py='12px'
-              borderRadius='15px'
-              _hover='none'
+              py='10px'
+              borderRadius='12px'
+              _hover={{ bg: themeColors.subCardHover }}
               w='100%'
               _active={{
                 bg: "inherit",
@@ -328,20 +340,21 @@ export function SidebarResponsive(props) {
               _focus={{
                 boxShadow: "none",
               }}>
-              <Flex>
+              <Flex align='center'>
                 {typeof prop.icon === "string" ? (
                   <Icon>{prop.icon}</Icon>
                 ) : (
                   <IconBox
-                    bg='brand.200'
-                    color='white'
-                    h='30px'
-                    w='30px'
+                    bg={themeColors.buttonPrimaryBg}
+                    color={themeColors.buttonPrimaryColor}
+                    h='28px'
+                    w='28px'
+                    borderRadius='8px'
                     me='12px'>
                     {prop.icon}
                   </IconBox>
                 )}
-                <Text color={activeColor} my='auto' fontSize='sm'>
+                <Text color={activeColor} my='auto' fontSize='sm' fontWeight='bold'>
                   {document.documentElement.dir === "rtl"
                     ? prop.rtlName
                     : prop.name}
@@ -355,18 +368,18 @@ export function SidebarResponsive(props) {
               alignItems='center'
               bg='transparent'
               mb={{
-                xl: "12px",
+                xl: "8px",
               }}
               mx={{
                 xl: "auto",
               }}
-              py='12px'
+              py='10px'
               ps={{
                 sm: "10px",
-                xl: "16px",
+                xl: "14px",
               }}
-              borderRadius='15px'
-              _hover='none'
+              borderRadius='12px'
+              _hover={{ bg: themeColors.subCardBg, color: themeColors.textPrimary }}
               w='100%'
               _active={{
                 bg: "inherit",
@@ -376,20 +389,22 @@ export function SidebarResponsive(props) {
               _focus={{
                 boxShadow: "none",
               }}>
-              <Flex>
+              <Flex align='center'>
                 {typeof prop.icon === "string" ? (
                   <Icon>{prop.icon}</Icon>
                 ) : (
                   <IconBox
-                    bg={inactiveBg}
-                    color='brand.200'
-                    h='30px'
-                    w='30px'
+                    bg={themeColors.subCardBg}
+                    color={themeColors.textSecondary}
+                    border={`1px solid ${themeColors.borderLight}`}
+                    h='28px'
+                    w='28px'
+                    borderRadius='8px'
                     me='12px'>
                     {prop.icon}
                   </IconBox>
                 )}
-                <Text color={inactiveColor} my='auto' fontSize='sm'>
+                <Text color={inactiveColor} my='auto' fontSize='sm' fontWeight='medium'>
                   {document.documentElement.dir === "rtl"
                     ? prop.rtlName
                     : prop.name}
@@ -405,29 +420,29 @@ export function SidebarResponsive(props) {
 
   var links = <>{createLinks(routes)}</>;
   //  BRAND
-  //  Chakra Color Mode
   var brand = (
     <Box pt={"35px"} mb='8px'>
-      <Link
-        href={`${process.env.PUBLIC_URL}/#/`}
-        target='_blank'
-        display='flex'
-        lineHeight='100%'
-        mb='30px'
-        fontWeight='bold'
-        justifyContent='center'
-        alignItems='center'
-        fontSize='11px'>
-        <SimmmpleLogoWhite w='22px' h='22px' me='10px' mt='2px' />
-        <Box
-          bg='linear-gradient(97.89deg, #FFFFFF 70.67%, rgba(117, 122, 140, 0) 108.55%)'
-          bgClip='text'>
-          <Text fontSize='sm' letterSpacing='3px' mt='3px' color='transparent'>
-            {logoText}
+      <NavLink
+        to='/admin/dashboard'
+        style={{
+          display: "flex",
+          lineHeight: "100%",
+          marginBottom: "24px",
+          fontWeight: "bold",
+          justifyContent: "center",
+          alignItems: "center",
+          fontSize: "11px",
+        }}>
+        <Flex w='28px' h='28px' borderRadius='8px' bg={themeColors.buttonPrimaryBg} justify='center' align='center' color={themeColors.buttonPrimaryColor} me='10px'>
+          <Icon as={FiLayers} w='15px' h='15px' />
+        </Flex>
+        <Box>
+          <Text fontSize='sm' letterSpacing='2px' mt='3px' color={themeColors.textPrimary} fontWeight='extrabold'>
+            {logoText || "S-TICKET-UP"}
           </Text>
         </Box>
-      </Link>
-      <Separator></Separator>
+      </NavLink>
+      <Separator bg={themeColors.borderLight} />
     </Box>
   );
 
@@ -441,11 +456,11 @@ export function SidebarResponsive(props) {
       ref={mainPanel}
       alignItems='center'>
       <HamburgerIcon
-        color={iconColor}
+        color={themeColors.textPrimary}
         w='18px'
         h='18px'
         ref={btnRef}
-        colorScheme='teal'
+        cursor='pointer'
         onClick={onOpen}
       />
       <Drawer
@@ -453,10 +468,8 @@ export function SidebarResponsive(props) {
         onClose={onClose}
         placement={document.documentElement.dir === "rtl" ? "right" : "left"}
         finalFocusRef={btnRef}>
-        <DrawerOverlay />
+        <DrawerOverlay backdropFilter='blur(6px)' />
         <DrawerContent
-          backdropFilter='blur(10px)'
-          bg='linear-gradient(111.84deg, rgba(6, 11, 38, 0.94) 59.3%, rgba(26, 31, 55, 0) 100%); '
           w='250px'
           maxW='250px'
           ms={{
@@ -465,9 +478,12 @@ export function SidebarResponsive(props) {
           my={{
             sm: "16px",
           }}
-          borderRadius='16px'>
+          borderRadius='16px'
+          bg={themeColors.cardBg}
+          border={`1px solid ${themeColors.cardBorder}`}
+          backdropFilter={themeColors.glassBackdrop}>
           <DrawerCloseButton
-            color='white'
+            color={themeColors.textPrimary}
             _focus={{ boxShadow: "none" }}
             _hover={{ boxShadow: "none" }}
           />
@@ -477,7 +493,6 @@ export function SidebarResponsive(props) {
               <Stack direction='column' mb='40px'>
                 <Box>{links}</Box>
               </Stack>
-              <SidebarHelp></SidebarHelp>
             </Box>
           </DrawerBody>
         </DrawerContent>
@@ -485,7 +500,6 @@ export function SidebarResponsive(props) {
     </Flex>
   );
 }
-// PROPS
 
 Sidebar.propTypes = {
   logoText: PropTypes.string,

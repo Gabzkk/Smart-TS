@@ -1,6 +1,7 @@
 const CardBody = {
   baseStyle: {
     display: "flex",
+    flexDirection: "column",
     width: "100%",
   },
 };

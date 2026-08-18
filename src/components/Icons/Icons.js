@@ -592,6 +592,8 @@ export const FulgerIcon = createIcon({
   ),
 });
 
+export const LightningIcon = FulgerIcon;
+
 export const CarIcon = createIcon({
   displayName: "CarIcon",
   viewBox: "0 0 22 19",

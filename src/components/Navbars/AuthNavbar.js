@@ -65,15 +65,16 @@ export default function AuthNavbar(props) {
   let navbarBackdrop = "blur(42px)";
   let navbarPosition = "fixed";
   var brand = (
-    <Link
-      href={`${process.env.PUBLIC_URL}/#/`}
-      target='_blank'
-      display='flex'
-      lineHeight='100%'
-      fontWeight='bold'
-      justifyContent='center'
-      alignItems='center'
-      color={mainText}>
+    <NavLink
+      to='/admin/dashboard'
+      style={{
+        display: "flex",
+        lineHeight: "100%",
+        fontWeight: "bold",
+        justifyContent: "center",
+        alignItems: "center",
+        color: mainText,
+      }}>
       <Box
         bg='linear-gradient(97.89deg, #FFFFFF 70.67%, rgba(117, 122, 140, 0) 108.55%)'
         bgClip='text'>
@@ -81,7 +82,7 @@ export default function AuthNavbar(props) {
           {logoText}
         </Text>
       </Box>
-    </Link>
+    </NavLink>
   );
   var linksAuth = (
     <HStack display={{ sm: "none", lg: "flex" }}>
@@ -177,19 +178,6 @@ export default function AuthNavbar(props) {
           />
         </Box>
         {linksAuth}
-        <Link href='https://creative-tim.com/product/vision-ui-dashboard-chakra'>
-          <Button
-            fontSize='xs'
-            variant='brand'
-            borderRadius='12px'
-            px='30px'
-            display={{
-              sm: "none",
-              lg: "flex",
-            }}>
-            Free Download
-          </Button>
-        </Link>
       </Flex>
     </Flex>
   );

@@ -1,7 +1,6 @@
-// Chakra Icons
-import { BellIcon, SearchIcon } from "@chakra-ui/icons";
-// Chakra Imports
+import React from "react";
 import {
+  Box,
   Button,
   Flex,
   IconButton,
@@ -13,194 +12,225 @@ import {
   MenuItem,
   MenuList,
   Text,
+  Badge,
+  HStack,
+  VStack,
+  Avatar,
+  Icon,
 } from "@chakra-ui/react";
-// Assets
-import avatar1 from "assets/img/avatars/avatar1.png";
-import avatar2 from "assets/img/avatars/avatar2.png";
-import avatar3 from "assets/img/avatars/avatar3.png";
-// Custom Icons
-import { ProfileIcon, SettingsIcon } from "components/Icons/Icons";
-// Custom Components
-import { ItemContent } from "components/Menu/ItemContent";
+import { SearchIcon, BellIcon } from "@chakra-ui/icons";
+import { FiUserCheck, FiPlus, FiAlertTriangle, FiCheck, FiLayers } from "react-icons/fi";
+import { SettingsIcon } from "components/Icons/Icons";
 import { SidebarResponsive } from "components/Sidebar/Sidebar";
+import ThemeToggle from "components/ThemeToggle/ThemeToggle";
 import PropTypes from "prop-types";
-import React from "react";
-import { NavLink } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import routes from "routes.js";
+import { useTickets } from "context/TicketContext";
 
 export default function HeaderLinks(props) {
   const { variant, children, fixed, secondary, onOpen, ...rest } = props;
+  const history = useHistory();
+  const {
+    currentUser,
+    users,
+    switchUser,
+    notifications,
+    markNotificationRead,
+    markAllNotificationsRead,
+    themeColors,
+    isDark,
+  } = useTickets();
 
-  // Chakra Color Mode
-  let inputBg = "#0F1535";
-  let mainText = "gray.400";
-  let navbarIcon = "white";
-  let searchIcon = "white";
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
-  if (secondary) {
-    navbarIcon = "white";
-    mainText = "white";
-  }
   const settingsRef = React.useRef();
+
   return (
     <Flex
       pe={{ sm: "0px", md: "16px" }}
       w={{ sm: "100%", md: "auto" }}
       alignItems='center'
-      flexDirection='row'>
+      flexDirection='row'
+      gap={{ base: "8px", md: "12px" }}>
+      {/* Quick Search */}
       <InputGroup
         cursor='pointer'
-        bg={inputBg}
-        borderRadius='15px'
-        borderColor='rgba(226, 232, 240, 0.3)'
-        w={{
-          sm: "128px",
-          md: "200px",
-        }}
-        me={{ sm: "auto", md: "20px" }}>
+        bg={themeColors.inputBg}
+        borderRadius='12px'
+        border={`1px solid ${themeColors.borderLight}`}
+        backdropFilter='blur(12px)'
+        w={{ sm: "100px", md: "160px", lg: "200px" }}>
         <InputLeftElement
           children={
             <IconButton
               bg='inherit'
               borderRadius='inherit'
               _hover='none'
-              _active={{
-                bg: "inherit",
-                transform: "none",
-                borderColor: "transparent",
-              }}
-              _focus={{
-                boxShadow: "none",
-              }}
-              icon={
-                <SearchIcon color={searchIcon} w='15px' h='15px' />
-              }></IconButton>
+              icon={<SearchIcon color={themeColors.textSecondary} w='14px' h='14px' />}
+            />
           }
         />
         <Input
           fontSize='xs'
           py='11px'
-          color={mainText}
-          placeholder='Type here...'
+          color={themeColors.textPrimary}
+          placeholder='Quick search...'
           borderRadius='inherit'
+          onKeyDown={(e) => {
+            if (e.key === "Enter") history.push("/admin/tickets");
+          }}
         />
       </InputGroup>
-      <NavLink to='/auth/signin'>
-        <Button
-          ms='0px'
-          px='0px'
-          me={{ sm: "2px", md: "16px" }}
-          color={navbarIcon}
-          variant='transparent-with-icon'
-          rightIcon={
-            document.documentElement.dir ? (
-              ""
-            ) : (
-              <ProfileIcon color={navbarIcon} w='22px' h='22px' me='0px' />
-            )
-          }
-          leftIcon={
-            document.documentElement.dir ? (
-              <ProfileIcon color={navbarIcon} w='22px' h='22px' me='0px' />
-            ) : (
-              ""
-            )
-          }>
-          <Text display={{ sm: "none", md: "flex" }}>Sign In</Text>
-        </Button>
-      </NavLink>
-      <SidebarResponsive
-        iconColor='gray.500'
-        logoText={props.logoText}
-        secondary={props.secondary}
-        routes={routes}
-        // logo={logo}
-        {...rest}
-      />
-      <SettingsIcon
-        cursor='pointer'
-        ms={{ base: "16px", xl: "0px" }}
-        me='16px'
-        ref={settingsRef}
-        onClick={props.onOpen}
-        color={navbarIcon}
-        w='18px'
-        h='18px'
-      />
+
+      {/* Role Switcher Menu */}
       <Menu>
-        <MenuButton align='center'>
-          <BellIcon color={navbarIcon} mt='-4px' w='18px' h='18px' />
+        <MenuButton
+          as={Button}
+          size='sm'
+          bg={themeColors.cardBg}
+          border={`1px solid ${themeColors.borderLight}`}
+          backdropFilter={themeColors.glassBackdrop}
+          borderRadius='12px'
+          px='10px'
+          _hover={{ bg: themeColors.subCardHover }}>
+          <HStack spacing='8px'>
+            <Avatar size='xs' name={currentUser.name} src={currentUser.avatar} />
+            <VStack align='flex-start' spacing='0' display={{ base: "none", md: "flex" }}>
+              <Text color={themeColors.textPrimary} fontSize='xs' fontWeight='bold' lineHeight='1'>
+                {currentUser.name}
+              </Text>
+              <Text color={themeColors.textSecondary} fontSize='9px' lineHeight='1'>
+                {currentUser.role}
+              </Text>
+            </VStack>
+          </HStack>
+        </MenuButton>
+        <MenuList
+          bg={themeColors.cardBg}
+          borderColor={themeColors.borderLight}
+          backdropFilter={themeColors.glassBackdrop}
+          boxShadow={themeColors.cardShadow}
+          p='8px'>
+          <Text px='12px' py='4px' fontSize='10px' color={themeColors.textMuted} fontWeight='bold' textTransform='uppercase'>
+            Simulate User Role (RBAC Testing):
+          </Text>
+          {users.map((u) => (
+            <MenuItem
+              key={u.id}
+              bg={u.id === currentUser.id ? themeColors.subCardBg : "transparent"}
+              _hover={{ bg: themeColors.subCardHover }}
+              borderRadius='8px'
+              onClick={() => switchUser(u.id)}
+              mb='4px'>
+              <HStack spacing='10px' w='100%' justify='space-between'>
+                <HStack spacing='8px'>
+                  <Avatar size='xs' name={u.name} src={u.avatar} />
+                  <Box>
+                    <Text color={themeColors.textPrimary} fontSize='xs' fontWeight='bold'>
+                      {u.name}
+                    </Text>
+                    <Text color={themeColors.textSecondary} fontSize='10px'>
+                      {u.role} • {u.team || u.company}
+                    </Text>
+                  </Box>
+                </HStack>
+                {u.id === currentUser.id && <Icon as={FiCheck} color={themeColors.textPrimary} />}
+              </HStack>
+            </MenuItem>
+          ))}
+        </MenuList>
+      </Menu>
+
+      {/* Theme Toggle with slow ripple animation */}
+      <ThemeToggle size='sm' />
+
+      {/* Notifications Popover Menu */}
+      <Menu>
+        <MenuButton position='relative' p='8px'>
+          <BellIcon color={themeColors.textPrimary} w='20px' h='20px' />
+          {unreadCount > 0 && (
+            <Badge
+              position='absolute'
+              top='2px'
+              right='2px'
+              bg={themeColors.buttonPrimaryBg}
+              color={themeColors.buttonPrimaryColor}
+              borderRadius='full'
+              fontSize='9px'
+              px='4px'
+              py='1px'>
+              {unreadCount}
+            </Badge>
+          )}
         </MenuButton>
 
         <MenuList
-          border='transparent'
-          backdropFilter='blur(63px)'
-          bg='linear-gradient(127.09deg, rgba(6, 11, 40, 0.94) 19.41%, rgba(10, 14, 35, 0.69) 76.65%)'
-          borderRadius='20px'>
-          <Flex flexDirection='column'>
-            <MenuItem
-              borderRadius='8px'
-              _hover={{
-                bg: "transparent",
-              }}
-              _active={{
-                bg: "transparent",
-              }}
-              _focus={{
-                bg: "transparent",
-              }}
-              mb='10px'>
-              <ItemContent
-                time='13 minutes ago'
-                info='from Alicia'
-                boldInfo='New Message'
-                aName='Alicia'
-                aSrc={avatar1}
-              />
-            </MenuItem>
-            <MenuItem
-              borderRadius='8px'
-              _hover={{
-                bg: "transparent",
-              }}
-              _active={{
-                bg: "transparent",
-              }}
-              _focus={{
-                bg: "transparent",
-              }}
-              _hover={{ bg: "transparent" }}
-              mb='10px'>
-              <ItemContent
-                time='2 days ago'
-                info='by Josh Henry'
-                boldInfo='New Album'
-                aName='Josh Henry'
-                aSrc={avatar2}
-              />
-            </MenuItem>
-            <MenuItem
-              borderRadius='8px'
-              _hover={{
-                bg: "transparent",
-              }}
-              _active={{
-                bg: "transparent",
-              }}
-              _focus={{
-                bg: "transparent",
-              }}>
-              <ItemContent
-                time='3 days ago'
-                info='Payment succesfully completed!'
-                boldInfo=''
-                aName='Kara'
-                aSrc={avatar3}
-              />
-            </MenuItem>
+          border={`1px solid ${themeColors.borderLight}`}
+          boxShadow={themeColors.cardShadow}
+          bg={themeColors.cardBg}
+          backdropFilter={themeColors.glassBackdrop}
+          borderRadius='16px'
+          w='320px'
+          p='12px'>
+          <Flex justify='space-between' align='center' mb='10px' px='6px'>
+            <Text color={themeColors.textPrimary} fontWeight='bold' fontSize='sm'>
+              Support Notifications
+            </Text>
+            {unreadCount > 0 && (
+              <Button size='xs' variant='ghost' color={themeColors.textSecondary} _hover={{ color: themeColors.textPrimary }} onClick={markAllNotificationsRead}>
+                Mark all read
+              </Button>
+            )}
           </Flex>
+
+          <VStack align='stretch' spacing='8px' maxH='300px' overflowY='auto'>
+            {notifications.map((n) => (
+              <Box
+                key={n.id}
+                p='10px'
+                bg={n.read ? themeColors.subCardBg : themeColors.cardBg}
+                border={`1px solid ${themeColors.borderLight}`}
+                borderRadius='10px'
+                _hover={{ bg: themeColors.subCardHover, cursor: "pointer" }}
+                onClick={() => {
+                  markNotificationRead(n.id);
+                  if (n.ticketId) history.push(`/admin/tickets/${n.ticketId}`);
+                }}>
+                <Flex justify='space-between' align='flex-start'>
+                  <Text color={themeColors.textPrimary} fontSize='xs' fontWeight='bold'>
+                    {n.title}
+                  </Text>
+                  {!n.read && <Badge bg={themeColors.buttonPrimaryBg} boxSize='6px' borderRadius='full' />}
+                </Flex>
+                <Text color={themeColors.textSecondary} fontSize='11px' mt='2px' noOfLines={2}>
+                  {n.message}
+                </Text>
+                <Text color={themeColors.textMuted} fontSize='9px' mt='4px'>
+                  {new Date(n.timestamp).toLocaleTimeString()}
+                </Text>
+              </Box>
+            ))}
+          </VStack>
         </MenuList>
       </Menu>
+
+      <SidebarResponsive
+        iconColor={themeColors.textPrimary}
+        logoText={props.logoText}
+        secondary={props.secondary}
+        routes={routes}
+        {...rest}
+      />
+
+      <SettingsIcon
+        cursor='pointer'
+        ref={settingsRef}
+        onClick={() => history.push("/admin/settings")}
+        color={themeColors.textPrimary}
+        w='18px'
+        h='18px'
+      />
     </Flex>
   );
 }

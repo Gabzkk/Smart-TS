@@ -1,66 +1,41 @@
-/*!
-
-=========================================================
-* Vision UI Free Chakra - v1.0.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/vision-ui-free-chakra
-* Copyright 2021 Creative Tim (https://www.creative-tim.com/)
-* Licensed under MIT (https://github.com/creativetimofficial/vision-ui-free-chakra/blob/master LICENSE.md)
-
-* Design and Coded by Simmmple & Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-
-// Chakra Imports
-import { Button, useColorModeValue } from "@chakra-ui/react";
-// Custom Icons
-import { SettingsIcon } from "components/Icons/Icons";
-import PropTypes from "prop-types";
 import React from "react";
+import { Button, Tooltip, Icon, Box } from "@chakra-ui/react";
+import { FiSliders } from "react-icons/fi";
+import PropTypes from "prop-types";
+import { useTickets } from "context/TicketContext";
 
 export default function FixedPlugin(props) {
-  const { secondary, onChange, onSwitch, fixed, ...rest } = props;
-  // Chakra Color Mode
-  let navbarIcon = "white";
-  let bgButton = "brand.200";
-  // if (props.secondary) {
-  //   fixedDisplay = "none";
-  // }
+  const { onOpen } = props;
+  const { themeColors } = useTickets();
 
-  const settingsRef = React.useRef();
   return (
-    <>
-      <Button
-        h='52px'
-        w='52px'
-        onClick={props.onOpen}
-        bg={bgButton}
-        position='fixed'
-        variant='no-hover'
-        left={document.documentElement.dir === "rtl" ? "35px" : ""}
-        right={document.documentElement.dir === "rtl" ? "" : "35px"}
-        bottom='30px'
-        borderRadius='50px'
-        boxShadow='0 2px 12px 0 rgb(0 0 0 / 16%)'>
-        <SettingsIcon
-          cursor='pointer'
-          ref={settingsRef}
-          color={navbarIcon}
-          w='20px'
-          h='20px'
-        />
-      </Button>
-    </>
+    <Box
+      position='fixed'
+      right={document.documentElement.dir === "rtl" ? "" : "28px"}
+      left={document.documentElement.dir === "rtl" ? "28px" : ""}
+      bottom='28px'
+      zIndex='99'>
+      <Tooltip label='Helpdesk Quick Controls' placement='left'>
+        <Button
+          h='48px'
+          w='48px'
+          onClick={onOpen}
+          bg={themeColors.buttonPrimaryBg}
+          color={themeColors.buttonPrimaryColor}
+          _hover={{ bg: themeColors.buttonPrimaryHover, transform: "scale(1.05)" }}
+          _active={{ transform: "scale(0.95)" }}
+          transition='all 0.2s ease'
+          borderRadius='50%'
+          boxShadow={themeColors.cardShadow}
+          backdropFilter='blur(12px)'>
+          <Icon as={FiSliders} w='20px' h='20px' />
+        </Button>
+      </Tooltip>
+    </Box>
   );
 }
 
 FixedPlugin.propTypes = {
   fixed: PropTypes.bool,
-  onChange: PropTypes.func,
-  onSwitch: PropTypes.func,
+  onOpen: PropTypes.func,
 };

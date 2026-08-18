@@ -23,8 +23,8 @@ class BarChart extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      chartData: [],
-      chartOptions: {},
+      chartData: props.barChartData || [],
+      chartOptions: props.barChartOptions || {},
     };
   }
 

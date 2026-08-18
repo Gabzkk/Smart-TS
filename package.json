@@ -1,8 +1,8 @@
 {
-  "name": "vision-dashboard-chakra",
+  "name": "s-ticket-up",
   "version": "1.0.1",
   "private": true,
-  "homepage": "https://demos.creative-tim.com/vision-ui-dashboard-chakra/#/",
+  "homepage": "/S-Ticket-UP",
   "dependencies": {
     "@chakra-ui/icons": "^1.1.5",
     "@chakra-ui/react": "1.8.8",
@@ -26,7 +26,6 @@
     "react-big-calendar": "0.33.2",
     "react-bootstrap-sweetalert": "5.2.0",
     "react-dom": "17.0.2",
-    "react-github-btn": "^1.2.1",
     "react-icons": "^4.2.0",
     "react-jvectormap": "0.0.16",
     "react-leaflet-semicircle": "^3.0.3",

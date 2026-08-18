@@ -2,13 +2,12 @@ const MainPanel = {
   baseStyle: {
     float: "right",
     maxWidth: "100%",
-    overflow: "auto",
+    minHeight: "100vh",
     position: "relative",
-    maxHeight: "100%",
     transition: "all 0.33s cubic-bezier(0.685, 0.0473, 0.346, 1)",
     transitionDuration: ".2s, .2s, .35s",
-    transitionProperty: "top, bottom, width",
-    transitionTimingFunction: "linear, linear, ease",
+    transitionProperty: "top, bottom, width, background-color",
+    transitionTimingFunction: "linear, linear, ease, ease",
   },
   variants: {
     main: (props) => ({

@@ -1,14 +1,13 @@
 const Card = {
   baseStyle: {
-    p: "22px",
+    p: "20px",
     display: "flex",
     flexDirection: "column",
-    backdropFilter: "blur(120px)",
     width: "100%",
-    borderRadius: "20px",
-    bg:
-      "linear-gradient(127.09deg, rgba(6, 11, 40, 0.94) 19.41%, rgba(10, 14, 35, 0.49) 76.65%)",
-    backgroundClip: "border-box",
+    borderRadius: "16px",
+    bg: "#fffdfd",
+    border: "1px solid #e1e1e3",
+    boxShadow: "0 1px 4px rgba(0, 0, 0, 0.04)",
   },
 };
 
